@@ -83,10 +83,12 @@
 
 #define TOP_BUTTON 0x00010000
 
+
 static void delay(volatile uint32_t nof);
 volatile bool bottom_button;
 volatile bool central_button;
 volatile bool top_button;
+volatile uint8_t interrupts;
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
@@ -347,7 +349,76 @@ void change_green_red_top(void){
 	GPIO_ClearPinsOutput(GPIOC, TOP_ZEBRA_GREEN);
 }
 
+void initial_state(void){
+	change_orange_red_bottom();
+	change_orange_green_central(0);
+	change_orange_red_top();
+}
+
+void handler_bottom_only(void){
+	bottom_button = false;
+//	interrupts &= ~ (1 << 0);
+
+	delay(SEC * 6);
+
+	change_red_orange_top();
+	change_green_orange_central();
+	delay(SEC * 2);
+
+	change_orange_green_top(1);
+	change_orange_red_central();
+	change_orange_green_central(2);
+	change_red_green_bottom();
+	delay(SEC * 6);
+
+	change_red_orange_bottom();
+	change_green_red_bottom();
+	change_green_orange_central();
+	change_red_orange_top();
+	delay(SEC * 2);
+
+	change_orange_green_bottom(0);
+	change_orange_red_central();
+	change_orange_green_top(0);
+	delay(SEC * 6);
+
+	change_green_orange_bottom();
+	change_red_orange_central();
+	change_green_orange_top();
+	delay(SEC * 2);
+
+	initial_state();
+}
+
+void handler_central_only(void){
+	central_button = false;
+//	interrupts &= ~( 1 << 1);
+
+	delay(SEC * 6);
+
+	change_red_orange_bottom();
+	change_green_orange_central();
+	change_red_orange_top();
+	delay(SEC*2);
+
+	change_orange_green_bottom(1);
+	change_red_green_central();
+	change_orange_red_central();
+	change_orange_green_top(2);
+	delay(SEC*6);
+
+	change_green_orange_bottom();
+	change_green_red_central();
+	change_green_orange_top();
+	change_red_orange_central();
+	delay(SEC*2);
+
+	initial_state();
+}
+
+
 void handler_top_only(void){
+//	interrupts &= ~ (1 << 2);
 	top_button = false;
 
 	delay(SEC * 6);
@@ -371,62 +442,127 @@ void handler_top_only(void){
 	change_orange_green_bottom(0);
 	change_orange_red_central();
 	change_orange_green_top(0);
+	delay(SEC * 6);
 
+	change_green_orange_bottom();
+	change_red_orange_central();
+	change_green_orange_top();
+	delay(SEC * 2);
+
+	initial_state();
 }
 
-void handler_bottom_only(void){
+void handler_bottom_central_top(void){
 	bottom_button = false;
+	top_button= false;
+	central_button = false;
 
 	delay(SEC * 6);
 
-	change_red_orange_top();
 	change_green_orange_central();
-	delay(SEC * 2);
+	delay(SEC*2);
 
-	change_orange_green_top(1);
 	change_orange_red_central();
-	change_orange_green_central(2);
 	change_red_green_bottom();
-	delay(SEC * 6);
+	change_red_green_central();
+	change_red_green_top();
+	delay(SEC*6);
 
-	change_red_orange_bottom();
 	change_green_red_bottom();
-	change_green_orange_central();
+	change_green_red_central();
+	change_green_red_top();
+	change_red_orange_bottom();
 	change_red_orange_top();
-	delay(SEC * 2);
+	delay(SEC*2);
 
 	change_orange_green_bottom(0);
-	change_orange_red_central();
 	change_orange_green_top(0);
-}
+	delay(SEC*6);
 
-void handler_central_only(void){
+	change_green_orange_bottom();
+	change_red_orange_central();
+	change_green_orange_top();
+	delay(SEC*2);
+
+	initial_state();
+}
+void handler_central_top(void){
+	top_button= false;
 	central_button = false;
 
 	delay(SEC * 6);
 
 	change_red_orange_bottom();
 	change_green_orange_central();
-	change_red_orange_top();
-	delay(SEC*2);
+	delay(SEC * 2);
 
-	change_orange_green_bottom(1);
+	change_red_green_top();
 	change_red_green_central();
+	change_orange_green_bottom(0);
 	change_orange_red_central();
-	change_orange_green_top(2);
-	delay(SEC*6);
+	delay(SEC * 6);
+
+	change_green_red_top();
+	change_green_red_central();
+	change_green_orange_bottom();
+	change_red_orange_central();
+	delay(SEC * 2);
+
+	initial_state();
+}
+
+void handler_bottom_top(void){
+	bottom_button = false;
+	top_button= false;
+
+	change_red_green_bottom();
+	change_red_green_top();
+	delay(SEC * 6);
+
+	change_green_red_bottom();
+	change_green_red_top();
+	change_red_orange_bottom();
+	change_green_orange_central();
+	change_red_orange_top();
+	delay(SEC * 2);
+
+
+	change_orange_green_bottom(0);
+	change_orange_red_central();
+	change_orange_green_top(0);
+	delay(SEC * 6);
 
 	change_green_orange_bottom();
+	change_red_orange_central();
+	change_green_orange_top();
+	delay(SEC * 2);
+
+	initial_state();
+}
+
+void handler_bottom_central(void){
+	bottom_button = false;
+	central_button = false;
+
+	delay(SEC * 6);
+
+	change_red_orange_top();
+	change_green_orange_central();
+	delay(SEC * 2);
+
+	change_red_green_bottom();
+	change_red_green_central();
+	change_orange_green_top(0);
+	change_orange_red_central();
+	delay(SEC * 6);
+
+	change_green_red_bottom();
 	change_green_red_central();
 	change_green_orange_top();
 	change_red_orange_central();
-	delay(SEC*2);
+	delay(SEC * 2);
 
-	change_orange_red_bottom();
-	change_orange_green_central(0);
-	change_orange_red_top();
-
-
+	initial_state();
 }
 
  void PORTB_PORTC_PORTD_PORTE_IRQHandler(void){
@@ -436,6 +572,7 @@ void handler_central_only(void){
 		PORTE->PCR[16] |= PORT_PCR_ISF(1);
 		if (GPIO_ReadPinInput(GPIOE, 16U) == 0){
 			top_button = true;
+//			interrupts |= 1 << 2;
 		}
 	}
 
@@ -443,6 +580,7 @@ void handler_central_only(void){
 		PORTE->PCR[24] |= PORT_PCR_ISF(1);
 		if (GPIO_ReadPinInput(GPIOE, 24U) == 0){
 			central_button = true;
+//			interrupts |= 1 << 1;
 		}
 	}
 
@@ -450,6 +588,7 @@ void handler_central_only(void){
 		PORTE->PCR[21] |= PORT_PCR_ISF(1);
 		if (GPIO_ReadPinInput(GPIOE, 21U) == 0){
 			bottom_button = true;
+//			interrupts |= 1 << 0;
 		}
 	}
 }
@@ -463,14 +602,28 @@ void handler_central_only(void){
  */
 
 int main(void) {
-	BOARD_InitPins();
+ 	BOARD_InitPins();
 	BOARD_BootClockRUN();
 	BOARD_InitDebugConsole();
 	bottom_button = false;
 	central_button = false;
 	top_button = false;
+	interrupts = 0;
 	for (;;) {
-		if (bottom_button){
+		if (bottom_button && central_button && top_button){
+			handler_bottom_central_top();
+		}
+		else if (central_button && top_button){
+			handler_central_top();
+		}
+		else if (bottom_button && top_button){
+			handler_bottom_top();
+		}
+
+		else if (bottom_button && central_button){
+			handler_bottom_central();
+		}
+		else if (bottom_button){
 			handler_bottom_only();
 		}
 		else if (top_button){
@@ -497,11 +650,9 @@ int main(void) {
 		change_green_orange_top();
 		delay(SEC * 2);
 
-		change_orange_red_bottom();
-		change_orange_green_central(0);
-		change_orange_red_top();
+		initial_state();
+
 	}
 
-	while (1) {
-	}
+	while (1){}
 }
