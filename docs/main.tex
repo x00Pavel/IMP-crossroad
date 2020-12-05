@@ -122,22 +122,17 @@
     Each function contains simple setting and clearing bits of LEDs in corresponding registers.
     In functions \textit{change\_orange\_green\_\textbf{side}()} there is switch case that enables both green LEDs or only one of them based on its argument \textit{arrow}.
     
-    \subsection{Interrupts handling}
+    \subsection*{Interrupts handling}
     When interrupts came, program switch to handler \textit{PORTB\_PORTC\_PORTD\_PORTE\_IRQHandler()}.
     In this handler flag for corresponding button is set.
     Flags is a boolean value \textit{\textbf{side}\_button}
     So, during any cycle this flags can be set.
     When system is in initial state before next standard cycle based on combination of button flags appropriate function is called.
-    \begin{itemize}
-        \item \textit{handler\_\textbf{side}\_only()} -- for processing request from the only one button
-        \item \textit{handler\_\textbf{side}\_\textbf{side}\_()} -- for processing request that came from two of three button
-    \end{itemize}
-    \noindent Here \textit{\textbf{side}} means one of three sides (bottom, central, top) where button is placed. 
-
+    Every function for processing this kind of request has name in format \textit{handler\_\textbf{side}()}.
+    Here \textit{\textbf{side}} means any combination of three sides (bottom, central, top) where button is placed (e.g \textit{handler\_bottom\_top()} means handler for request from bottom and top buttons simultaneously)
+    
     \section{Problems and limitations}
 
 
-    \bibliographystyle{style}
-    \bibliography{sample}
 
 \end{document}
